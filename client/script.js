@@ -81,7 +81,35 @@ const handleSubmit = async(e)=>{
   const messageDiv = document.getElementById(uniqueId)
 
   // messageDiv.innerHTML = "..."
-  loader(messageDiv)
+  loader(messageDiv);
+
+  //fetching data from server i.e; response from openAI
+  const response  = await fetch('http://localhost:5000',{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      prompt : data.get('prompt')
+    })
+  })
+  
+  clearInterval(loadInterval);
+  messageDivDiv.innerHTML ='';
+
+  if(response.ok){
+    const data = await response.json();
+    const parsedData = data.bot.trim();
+
+    typeText(messageDiv, parsedData);
+  }else{
+    const err = await response.text();
+
+    messageDiv.innerHTML = "Something Went Wrong That you can't handle";
+
+    alert(err);
+  }
+
 }
 
 
